@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.doubanio.com/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+pytest = "*"
+black = "*"
+twine = "*"
+flask = "*"
+"flake8" = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
+
+allow_prereleases = true
