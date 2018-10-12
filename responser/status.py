@@ -88,3 +88,5 @@ for number in codes:
 
     for label in codes[number]:
         locals()[label] = number
+
+
