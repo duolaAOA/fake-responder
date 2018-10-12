@@ -5,8 +5,8 @@ import graphene
 
 import responser
 
-
-api = responser.API()
+api = responser.API(static="static")
+# api.mount('/subapp', other_wsgi_app)
 
 
 @api.route("/")
@@ -31,26 +31,10 @@ class Query(graphene.ObjectType):
 
 schema = graphene.Schema(query=Query)
 
-
-class GraphQLResource(responser.GraphQLSchema):
-
-    def on_request(self, req, resp):
-        resp.status = responser.status.HTTP_200
-        print(schema.execute("{ hello }").data)
-
-        resp.media = ["yolo"]
-
-
-# Alerntatively,
-api.add_route("/2", GraphQLResource)
-api.add_route("/graph", schema)
-
-print(
-    api.session()
-    .get(
-        "http://app/graph?query={ hello }",
-        headers={"Accept": "application/x-yaml"},
-        # data="hello",
-    )
-    .text
-)
+print(api.session().get(
+    "http://app/graph?q={ hello }",
+    headers={
+        "Accept": "application/x-yaml"
+    },
+    # data="hello",
+).text)

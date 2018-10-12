@@ -10,11 +10,13 @@ pyyaml = "*"
 requests = "*"
 requests-wsgi-adapter = "*"
 graphene = "*"
+whitenoise = "*"
 
 [dev-packages]
 pytest = "*"
 "flake8" = "*"
 black = "*"
+twine = "*"
 
 [requires]
 python_version = "3.6"
