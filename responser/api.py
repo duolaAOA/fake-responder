@@ -1,4 +1,9 @@
+import os
+from pathlib import Path
 
+import graphene
+
+from whitenoise import WhiteNoise
 from requests import Session as RequestsSession
 from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
@@ -12,7 +17,7 @@ class BaseAPI:
     def __init__(self):
         self.routes = {}
 
-    def wsgi_app(self, environ, start_response):
+    def _wsgi_app(self, environ, start_response):
         # def wsgi_app(self, request):
         """The actual WSGI application. This is not implemented in
         :meth:`__call__` so that middlewares can be applied without
@@ -43,6 +48,9 @@ class BaseAPI:
         resp = self._dispatch_request(req)
 
         return resp(environ, start_response)
+
+    def wsgi_app(self, environ, start_response):
+        return self.whitenoise(environ, start_response)
 
     def __call__(self, environ, start_response):
         """The WSGI server calls the Flask application object as the
@@ -89,13 +97,24 @@ class BaseAPI:
 
         return resp
 
+    @property
+    def static_dir(self):
+        return Path(".")
+
 
 class API(BaseAPI):
-    __slots__ = ("routes", "_session")
+    __slots__ = ("routes", "_session", "whitenoise", "static_dir")
 
-    def __init__(self):
+    def __init__(self, static="static"):
         super().__init__()
         self._session = None
+        self.static_dir = Path(os.path.abspath(static))
+
+        # Make the static directory if it doesn't exist.
+        os.makedirs(self.static_dir, exist_ok=True)
+
+        # Mount the whitenoise application.
+        self.whitenoise = WhiteNoise(self._wsgi_app, root=str(self.static_dir))
 
     def add_route(self, route, view, *, check_existing=True):
         if check_existing:
