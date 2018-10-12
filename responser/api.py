@@ -116,7 +116,7 @@ class API(BaseAPI):
         # Mount the whitenoise application.
         self.whitenoise = WhiteNoise(self._wsgi_app, root=str(self.static_dir))
 
-    def add_route(self, route, view, *, check_existing=True):
+    def add_route(self, route, view, *, check_existing=True, graphiql=False):
         if check_existing:
             assert route not in self.routes
 
@@ -134,7 +134,6 @@ class API(BaseAPI):
         if "q" in req.data:
             return req.data["q"]
 
-        # Support query/q in params.
         if "query" in req.params:
             return req.params["query"][0]
         if "q" in req.params:
